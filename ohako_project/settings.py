@@ -79,6 +79,7 @@ MIDDLEWARE = [
 ]
 
 # CORS settings
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'ohako_project.urls'
 

@@ -1,12 +1,13 @@
 from pathlib import Path
 from datetime import timedelta
 import os
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-)wu_vnk9_abnxvl!-xzsjrb!irj^2(=mwzb!vruemgg2d%51j%'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['backendohako-746be3b32e21.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -91,10 +92,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ohako_project.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -134,3 +132,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+
+# Herokuが推奨するスタティックファイルの設定
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

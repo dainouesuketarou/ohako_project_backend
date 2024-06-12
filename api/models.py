@@ -1,13 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-
 class UserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username:
             raise ValueError('The Username field must be set')
         user = self.model(username=username, **extra_fields)
-        user.set_password(password)
+        user.set_password(password)  # パスワードのハッシュ化
         user.save(using=self._db)
         return user
 
@@ -24,20 +23,21 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True)
+    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    followers = models.ManyToManyField('self', symmetrical=False, related_name='following')
 
     objects = UserManager()
 
-    # 認証に使用するフィールドの設定
     USERNAME_FIELD = 'username'
-    # ここで指定されたフィールドはスーパーユーザーを作成する時に設定が求められる
     REQUIRED_FIELDS = []
 
-    # ユーザーオブジェクトを表現する際の変数を定義
     def __str__(self):
         return self.username
+
 
 class Track(models.Model):
     spotify_id = models.CharField(max_length=255)

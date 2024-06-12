@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-)wu_vnk9_abnxvl!-xzsjrb!irj^2(=mwzb!vruemgg2d%51j%
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['backendohako-746be3b32e21.herokuapp.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',

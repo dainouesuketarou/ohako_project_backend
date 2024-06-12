@@ -87,7 +87,7 @@ TEMPLATES = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'https://ohako-project-frontend-cl5x9m6ho-dainouesuketarous-projects.vercel.app',
+    'https://ohako-project-frontend.vercel.app',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

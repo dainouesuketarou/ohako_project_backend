@@ -162,29 +162,30 @@ class UserPlaylistsView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class TrackSearchView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        query = request.query_params.get('query', None)
+        query = request.query_params.get('query')
         if not query:
             return Response({"error": "Query parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
 
+        sp = get_spotify_client()
         try:
-            sp = get_spotify_client()
-            results = sp.search(q=query, type='track', limit=10)
-            tracks = results['tracks']['items']
-            track_list = []
-            for track in tracks:
-                track_info = {
-                    'name': track['name'],
-                    'artist': track['artists'][0]['name'],
-                    'album': track['album']['name'],
-                    'preview_url': track['preview_url'],
-                    'external_url': track['external_urls']['spotify']
+            results = sp.search(q=query, limit=10, type='track', market='JP')
+            tracks = [
+                {
+                    "spotify_id": track['id'],
+                    "name": track['name'],
+                    "artists": ', '.join(artist['name'] for artist in track['artists']),
+                    "album_name": track['album']['name'],
+                    "album_image": track['album']['images'][0]['url'] if track['album']['images'] else None
                 }
-                track_list.append(track_info)
-            return JsonResponse(track_list, safe=False)
+                for track in results['tracks']['items']
+            ]
+            return Response(tracks, status=status.HTTP_200_OK)
         except Exception as e:
+            logger.error(f"Error searching tracks: {e}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # class TrackSearchView(APIView):

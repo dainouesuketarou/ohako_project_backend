@@ -2,12 +2,13 @@ from pathlib import Path
 from datetime import timedelta
 import os
 import dj_database_url
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-)wu_vnk9_abnxvl!-xzsjrb!irj^2(=mwzb!vruemgg2d%51j%'
+SECRET_KEY = config('SECRET_KEY')
 
-DEBUG = False
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['backendohako-746be3b32e21.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -29,8 +30,6 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
-
-from decouple import config
 
 SPOTIPY_CLIENT_ID = config('SPOTIPY_CLIENT_ID')
 SPOTIPY_CLIENT_SECRET = config('SPOTIPY_CLIENT_SECRET')
@@ -67,7 +66,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'ohako_project.urls'
@@ -121,7 +119,7 @@ AUTHENTICATION_BACKENDS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'UTC'  # 必要に応じて適切なタイムゾーンを設定してください
 
 USE_I18N = True
 
@@ -138,8 +136,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 # Herokuが推奨するスタティックファイルの設定
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

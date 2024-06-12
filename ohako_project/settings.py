@@ -89,6 +89,12 @@ TEMPLATES = [
     },
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    'https://ohako-project-frontend-cl5x9m6ho-dainouesuketarous-projects.vercel.app',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
 WSGI_APPLICATION = 'ohako_project.wsgi.application'
 
 DATABASES = {

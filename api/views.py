@@ -76,13 +76,17 @@ def register(request):
     user = User.objects.create_user(username=username, password=password)
     user.save()
 
+    # ユーザー登録時にプレイリストを作成
+    playlist = Playlist.objects.create(user=user, name=f"{username}'s Playlist")
+    playlist.save()
+
     refresh = RefreshToken.for_user(user)
     user_data = UserSerializer(user).data
     return Response({
         'refresh': str(refresh),
         'access': str(refresh.access_token),
         'user': user_data
-    })
+    }, status=status.HTTP_201_CREATED)
 
 # class UserRegistrationView(generics.CreateAPIView):
 #     queryset = User.objects.all()

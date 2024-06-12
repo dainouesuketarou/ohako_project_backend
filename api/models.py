@@ -49,3 +49,6 @@ class Playlist(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='playlist')
     name = models.CharField(max_length=255, default='My Playlist')
     tracks = models.ManyToManyField(Track, related_name='playlists', blank=True)
+
+    def __str__(self):
+        return self.name

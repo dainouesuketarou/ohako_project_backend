@@ -214,6 +214,131 @@ class TrackSearchView(APIView):
 #             logger.error(f"Error searching tracks: {e}")
 #             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# class TrackRecommendationView(APIView):
+#     authentication_classes = [JWTAuthentication]
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, request, format=None):
+#         track_name = request.query_params.get('track_name')
+#         if not track_name:
+#             return Response({"error": "Track name is required"}, status=status.HTTP_400_BAD_REQUEST)
+#
+#         sp = get_spotify_client()
+#
+#         try:
+#             results = sp.search(q=track_name, limit=1, type='track', market='JP')
+#             logger.debug(f"Spotify search results: {results}")
+#
+#             if not results['tracks']['items']:
+#                 return Response({"error": "Track not found"}, status=status.HTTP_404_NOT_FOUND)
+#
+#             track = results['tracks']['items'][0]
+#             track_data = {
+#                 "id": track['id'],
+#                 "name": track['name'],
+#                 "artists": [artist['name'] for artist in track['artists']],
+#                 "album_name": track['album']['name'],
+#                 "album_image": track['album']['images'][0]['url'] if track['album']['images'] else None
+#             }
+#
+#             audio_features = sp.audio_features([track['id']])
+#             logger.debug(f"Spotify audio features: {audio_features}")
+#
+#             if not audio_features or not audio_features[0]:
+#                 return Response({"error": "Audio features not found"}, status=status.HTTP_404_NOT_FOUND)
+#
+#             track_key = audio_features[0]['key']
+#
+#             recommendations = sp.recommendations(seed_tracks=[track['id']], limit=50, market='JP')
+#             recommendation_ids = [rec['id'] for rec in recommendations['tracks']]
+#             recommendation_features = sp.audio_features(recommendation_ids)
+#
+#             tracks = [
+#                 {
+#                     "name": rec['name'],
+#                     "artists": [artist['name'] for artist in rec['artists']],
+#                     "id": rec['id'],
+#                     "popularity": rec['popularity'],
+#                     "album_name": rec['album']['name'],
+#                     "album_image": rec['album']['images'][0]['url'],
+#                     "key": feature['key']
+#                 }
+#                 for rec, feature in zip(recommendations['tracks'], recommendation_features)
+#                 if feature and (feature['key'] == track_key or feature['key'] == (track_key - 1) % 12)
+#             ]
+#
+#             sorted_tracks = sorted(tracks, key=lambda x: x['popularity'], reverse=True)[:10]
+#
+#             return Response({
+#                 "track_info": track_data,
+#                 "recommendations": sorted_tracks
+#             }, status=status.HTTP_200_OK)
+#
+#         except Exception as e:
+#             logger.error(f"Error fetching track recommendations: {str(e)}")
+#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#
+#
+# class TrackRecommendationByTempoView(APIView):
+#     authentication_classes = [JWTAuthentication]
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, request, format=None):
+#         track_name = request.query_params.get('track_name')
+#         if not track_name:
+#             return Response({"error": "Track name is required"}, status=status.HTTP_400_BAD_REQUEST)
+#
+#         sp = get_spotify_client()
+#         retries = 5
+#         delay = 1
+#
+#         for attempt in range(retries):
+#             try:
+#                 results = sp.search(q=track_name, limit=1, type='track', market='JP')
+#                 logger.debug(f"Spotify search results: {results}")
+#
+#                 if not results['tracks']['items']:
+#                     logger.error("Track not found")
+#                     return Response({"error": "Track not found"}, status=status.HTTP_404_NOT_FOUND)
+#
+#                 track = results['tracks']['items'][0]
+#                 track_id = track['id']
+#                 audio_features = sp.audio_features([track_id])
+#                 logger.debug(f"Spotify audio features: {audio_features}")
+#
+#                 if not audio_features or not audio_features[0]:
+#                     logger.error("Audio features not found")
+#                     return Response({"error": "Audio features not found"}, status=status.HTTP_404_NOT_FOUND)
+#
+#                 track_tempo = audio_features[0]['tempo']
+#
+#                 recommendations = sp.recommendations(seed_tracks=[track_id], limit=50, market='JP')
+#                 tracks = []
+#                 for rec in recommendations['tracks']:
+#                     rec_audio_features = sp.audio_features([rec['id']])
+#                     if rec_audio_features and abs(rec_audio_features[0]['tempo'] - track_tempo) <= 10:
+#                         tracks.append({
+#                             "name": rec['name'],
+#                             "artists": [artist['name'] for artist in rec['artists']],
+#                             "id": rec['id'],
+#                             "popularity": rec['popularity'],
+#                             "album_name": rec['album']['name'],
+#                             "album_image": rec['album']['images'][0]['url'],
+#                             "tempo": rec_audio_features[0]['tempo']
+#                         })
+#
+#                 sorted_tracks = sorted(tracks, key=lambda x: x['popularity'], reverse=True)
+#                 logger.info(f"Recommendations for {track_name} with tempo {track_tempo}: {sorted_tracks}")
+#
+#                 return Response(sorted_tracks, status=status.HTTP_200_OK)
+#
+#             except Exception as e:
+#                 logger.error(f"Error fetching recommendations (attempt {attempt + 1}/{retries}): {e}")
+#                 time.sleep(delay)
+#                 delay *= 2
+#
+#         return Response({"error": "Something went wrong"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class TrackRecommendationView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -277,7 +402,6 @@ class TrackRecommendationView(APIView):
         except Exception as e:
             logger.error(f"Error fetching track recommendations: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 class TrackRecommendationByTempoView(APIView):
     authentication_classes = [JWTAuthentication]

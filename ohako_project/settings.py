@@ -1,3 +1,5 @@
+# settings.py
+
 from pathlib import Path
 from datetime import timedelta
 import os
@@ -22,7 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'api',
-    'corsheaders',
+    'corsheaders',  # corsheadersを追加
 ]
 
 REST_FRAMEWORK = {
@@ -60,7 +62,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # corsheadersミドルウェアを追加
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -87,7 +89,7 @@ TEMPLATES = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'https://ohako-project-frontend-3r12h6v4w-dainouesuketarous-projects.vercel.app',
+    'https://ohako-project-frontend-6xbyi5wa9-dainouesuketarous-projects.vercel.app',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
